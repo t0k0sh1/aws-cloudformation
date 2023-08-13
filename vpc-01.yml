@@ -1,0 +1,43 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: "$ aws cloudformation create-stack --stack-name test-vpc-01\
+  --template-body file:///home/t0k0sh1/workspace/aws-cloudformation/vpc-01.yml\
+  --parameters ParameterKey=Prefix,ParameterValue=test
+  $ aws cloudformation delete-stack --stack-name test-vpc-01"
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: VPC Configuration
+        Parameters:
+          - Prefix
+          - VpcCidr
+    ParameterLabels:
+      VpcCidr:
+        default: "VPC CIDR"
+
+Parameters:
+  Prefix:
+    Type: String
+  VpcCidr:
+    Type: String
+    Default: "10.1.0.0/16"
+
+Resources:
+  VPC:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: !Ref VpcCidr
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: !Sub "${Prefix}-vpc"
+
+Outputs:
+  # VPC
+  VPC:
+    Description: VPC ID
+    Value: !Ref VPC
+    Export:
+      Name: !Sub "${Prefix}-vpc"
